@@ -84,15 +84,10 @@ export default function ApplyBaddie() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    const { firstName, lastName, email, phone, age, neighborhood, instagram, ...rest } = form
     const result = await api.submitApplication('baddie', {
-      first_name: form.firstName,
-      last_name: form.lastName,
-      email: form.email,
-      phone: form.phone,
-      age: form.age,
-      neighborhood: form.neighborhood,
-      instagram: form.instagram,
-      ...form,
+      firstName, lastName, email, phone, age, neighborhood, instagram,
+      ...rest,
     })
     setSubmitting(false)
     if (result) setSubmitted(true)

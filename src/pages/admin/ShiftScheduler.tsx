@@ -33,16 +33,17 @@ export default function ShiftScheduler() {
   const handleSchedule = async () => {
     const match = matches.find((m) => m.id === selectedMatch)
     if (!match || !date) return
-    const shift = await api.createShift({
+    const id = await api.createShift({
       match_id: match.id,
       client_id: match.client_id,
       baddie_id: match.baddie_id,
       scheduled_date: date,
-      scheduled_start: startTime,
-      scheduled_end: `${parseInt(startTime) + 4}:00`,
+      start_time: startTime,
+      end_time: `${String(parseInt(startTime) + 4).padStart(2, '0')}:00`,
     })
-    if (shift) {
-      setShifts((prev) => [shift, ...prev])
+    if (id) {
+      const refreshed = await api.getShifts()
+      setShifts(refreshed)
       setSelectedMatch('')
       setDate('')
     }
@@ -110,7 +111,7 @@ export default function ShiftScheduler() {
               </div>
               <div>
                 <p className="text-xs text-muted mb-0.5">Time</p>
-                <p className="text-sm text-warm-white">{shift.scheduled_start} – {shift.scheduled_end}</p>
+                <p className="text-sm text-warm-white">{shift.start_time} – {shift.end_time}</p>
               </div>
               <div>
                 <p className="text-xs text-muted mb-0.5">Client</p>

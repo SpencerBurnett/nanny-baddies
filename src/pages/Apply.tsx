@@ -97,14 +97,10 @@ export default function Apply() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    const { firstName, lastName, email, phone, age, neighborhood, ...rest } = form
     const result = await api.submitApplication('client', {
-      first_name: form.firstName,
-      last_name: form.lastName,
-      email: form.email,
-      phone: form.phone,
-      age: form.age,
-      neighborhood: form.neighborhood,
-      ...form,
+      firstName, lastName, email, phone, age, neighborhood,
+      ...rest,
     })
     setSubmitting(false)
     if (result) setSubmitted(true)

@@ -25,13 +25,10 @@ export default function AdminMatching() {
 
   const handleCreateMatch = async () => {
     if (!selectedClient || !selectedBaddie || !profile) return
-    const match = await api.createMatch({
-      client_id: selectedClient,
-      baddie_id: selectedBaddie,
-      matched_by: profile.id,
-    })
-    if (match) {
-      setMatches((prev) => [match, ...prev])
+    const id = await api.createMatch(selectedClient, selectedBaddie, profile.id)
+    if (id) {
+      const refreshed = await api.getMatches()
+      setMatches(refreshed)
       setSelectedClient('')
       setSelectedBaddie('')
     }
@@ -49,7 +46,7 @@ export default function AdminMatching() {
 
   const statusColors: Record<string, string> = {
     active: 'bg-green-500/20 text-green-400',
-    pending: 'bg-yellow-500/20 text-yellow-400',
+    paused: 'bg-yellow-500/20 text-yellow-400',
     ended: 'bg-red-500/20 text-red-400',
   }
 
@@ -119,7 +116,7 @@ export default function AdminMatching() {
                   End
                 </button>
               )}
-              {match.status === 'pending' && (
+              {match.status === 'paused' && (
                 <button
                   onClick={() => handleUpdateStatus(match.id, 'active')}
                   className="text-xs text-green-400 hover:text-green-300 cursor-pointer"
