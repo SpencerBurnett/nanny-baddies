@@ -10,6 +10,40 @@ import { supabase } from './supabase'
 import type { Profile, Role } from '../types'
 import type { Session, User } from '@supabase/supabase-js'
 
+const DEV_PROFILES: Record<Role, Profile> = {
+  client: {
+    id: 'dev-client-0000', role: 'client', first_name: 'Dev', last_name: 'Client',
+    email: 'dev-client@nannybaddies.com', phone: '(512) 555-0001', avatar_url: null,
+    status: 'active', created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+  },
+  baddie: {
+    id: 'dev-baddie-0000', role: 'baddie', first_name: 'Dev', last_name: 'Baddie',
+    email: 'dev-baddie@nannybaddies.com', phone: '(512) 555-0002', avatar_url: null,
+    status: 'active', created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+  },
+  admin: {
+    id: 'dev-admin-0000', role: 'admin', first_name: 'Dev', last_name: 'Admin',
+    email: 'dev-admin@nannybaddies.com', phone: '(512) 555-0003', avatar_url: null,
+    status: 'active', created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+  },
+}
+
+export function devLogin(role: Role) {
+  localStorage.setItem('nb_dev_mode', JSON.stringify({ role }))
+}
+
+export function devLogout() {
+  localStorage.removeItem('nb_dev_mode')
+}
+
+function getDevMode(): Role | null {
+  try {
+    const raw = localStorage.getItem('nb_dev_mode')
+    if (!raw) return null
+    return JSON.parse(raw).role as Role
+  } catch { return null }
+}
+
 interface AuthState {
   session: Session | null
   user: User | null
@@ -39,6 +73,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    const devRole = getDevMode()
+    if (devRole) {
+      setProfile(DEV_PROFILES[devRole])
+      setLoading(false)
+      return
+    }
+
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s)
       setUser(s?.user ?? null)
@@ -75,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
+    devLogout()
     await supabase.auth.signOut()
     setProfile(null)
   }
@@ -127,7 +169,8 @@ export function ProtectedRoute({
     )
   }
 
-  if (!user) {
+  const devMode = getDevMode()
+  if (!user && !devMode) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
