@@ -19,6 +19,12 @@ import type {
   Conversation,
   Message,
   Earning,
+  ConductAgreement,
+  TaskRequest,
+  TaskRequestStatus,
+  InventoryRoom,
+  InventoryItem,
+  ShiftRecording,
 } from '../types'
 
 // ─── Applications (public) ───────────────────────────────────────────
@@ -419,4 +425,170 @@ export async function getAdminStats(): Promise<{
     pendingApplications: apps.count ?? 0,
     shiftsThisWeek: shifts.count ?? 0,
   }
+}
+
+// ─── Conduct Agreements ─────────────────────────────────────────────
+
+export async function getConductAgreement(profileId: string): Promise<ConductAgreement | null> {
+  const { data } = await supabase
+    .from('conduct_agreements')
+    .select('*')
+    .eq('profile_id', profileId)
+    .single()
+  return data as ConductAgreement | null
+}
+
+export async function signConductAgreement(profileId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('conduct_agreements')
+    .upsert({
+      profile_id: profileId,
+      agreed_at: new Date().toISOString(),
+      version: 1,
+    }, { onConflict: 'profile_id' })
+  return !error
+}
+
+// ─── Task Requests ──────────────────────────────────────────────────
+
+export async function getTaskRequests(
+  filters?: { client_id?: string; baddie_id?: string; match_id?: string; status?: TaskRequestStatus }
+): Promise<TaskRequest[]> {
+  let q = supabase
+    .from('task_requests')
+    .select('*, client:profiles!task_requests_client_id_fkey(*), baddie:profiles!task_requests_baddie_id_fkey(*)')
+    .order('created_at', { ascending: false })
+  if (filters?.client_id) q = q.eq('client_id', filters.client_id)
+  if (filters?.baddie_id) q = q.eq('baddie_id', filters.baddie_id)
+  if (filters?.match_id) q = q.eq('match_id', filters.match_id)
+  if (filters?.status) q = q.eq('status', filters.status)
+  const { data } = await q
+  return (data as TaskRequest[]) ?? []
+}
+
+export async function createTaskRequest(request: {
+  match_id: string
+  client_id: string
+  baddie_id: string
+  title: string
+  description?: string
+}): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('task_requests')
+    .insert(request)
+    .select('id')
+    .single()
+  if (error) return null
+  return (data as { id: string }).id
+}
+
+export async function updateTaskRequest(
+  id: string,
+  updates: Partial<Pick<TaskRequest, 'status' | 'hired_out' | 'hired_out_cost' | 'hired_out_vendor' | 'completed_at'>>
+): Promise<boolean> {
+  const { error } = await supabase.from('task_requests').update(updates).eq('id', id)
+  return !error
+}
+
+// ─── Home Inventory ─────────────────────────────────────────────────
+
+export async function getInventoryRooms(clientId: string): Promise<InventoryRoom[]> {
+  const { data } = await supabase
+    .from('inventory_rooms')
+    .select('*, items:inventory_items(*)')
+    .eq('client_id', clientId)
+    .order('sort_order')
+  return (data as InventoryRoom[]) ?? []
+}
+
+export async function createInventoryRoom(clientId: string, name: string, sortOrder: number): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('inventory_rooms')
+    .insert({ client_id: clientId, name, sort_order: sortOrder })
+    .select('id')
+    .single()
+  if (error) return null
+  return (data as { id: string }).id
+}
+
+export async function createInventoryItem(item: {
+  room_id: string
+  item_name: string
+  quantity?: number
+  restock_threshold?: number
+  notes?: string
+}): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('inventory_items')
+    .insert(item)
+    .select('id')
+    .single()
+  if (error) return null
+  return (data as { id: string }).id
+}
+
+export async function updateInventoryItem(
+  id: string,
+  updates: Partial<Pick<InventoryItem, 'quantity' | 'restock_threshold' | 'notes' | 'last_checked_at' | 'last_checked_by'>>
+): Promise<boolean> {
+  const { error } = await supabase.from('inventory_items').update(updates).eq('id', id)
+  return !error
+}
+
+export async function deleteInventoryItem(id: string): Promise<boolean> {
+  const { error } = await supabase.from('inventory_items').delete().eq('id', id)
+  return !error
+}
+
+export async function deleteInventoryRoom(id: string): Promise<boolean> {
+  await supabase.from('inventory_items').delete().eq('room_id', id)
+  const { error } = await supabase.from('inventory_rooms').delete().eq('id', id)
+  return !error
+}
+
+// ─── Shift Recordings ───────────────────────────────────────────────
+
+export async function uploadShiftRecording(
+  shiftId: string,
+  baddieId: string,
+  file: File
+): Promise<ShiftRecording | null> {
+  const path = `recordings/${shiftId}/${file.name}`
+  const { error: uploadError } = await supabase.storage
+    .from('shift-recordings')
+    .upload(path, file)
+  if (uploadError) {
+    console.error('uploadShiftRecording:', uploadError.message)
+    return null
+  }
+
+  const { data, error } = await supabase
+    .from('shift_recordings')
+    .insert({
+      shift_id: shiftId,
+      baddie_id: baddieId,
+      file_path: path,
+      file_size: file.size,
+    })
+    .select('*')
+    .single()
+  if (error) return null
+  return data as ShiftRecording
+}
+
+export async function getShiftRecordings(
+  filters?: { shift_id?: string; baddie_id?: string }
+): Promise<ShiftRecording[]> {
+  let q = supabase.from('shift_recordings').select('*').order('uploaded_at', { ascending: false })
+  if (filters?.shift_id) q = q.eq('shift_id', filters.shift_id)
+  if (filters?.baddie_id) q = q.eq('baddie_id', filters.baddie_id)
+  const { data } = await q
+  return (data as ShiftRecording[]) ?? []
+}
+
+export async function getRecordingUrl(filePath: string): Promise<string | null> {
+  const { data } = await supabase.storage
+    .from('shift-recordings')
+    .createSignedUrl(filePath, 3600)
+  return data?.signedUrl ?? null
 }

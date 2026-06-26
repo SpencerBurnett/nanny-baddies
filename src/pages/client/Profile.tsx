@@ -32,6 +32,7 @@ const empty: Fields = {
   bed_making_standard: null, preferred_drinkware: null, temperature_preference: null,
   scent_preference: null, music_preference: null, has_pets: false, pet_details: null,
   has_plants: false, plant_details: null, additional_notes: null,
+  preferred_name: null, preferred_title: null,
 }
 
 export default function ClientProfile() {

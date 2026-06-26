@@ -83,6 +83,8 @@ export interface ClientProfile {
   temperature_preference: string | null
   scent_preference: string | null
   music_preference: string | null
+  preferred_name: string | null
+  preferred_title: 'first_name' | 'mr' | 'sir' | 'nickname' | null
   has_pets: boolean
   pet_details: string | null
   has_plants: boolean
@@ -242,5 +244,96 @@ export interface Payout {
   status: PayoutStatus
   period_start: string
   period_end: string
+  created_at: string
+}
+
+// ─── Conduct Agreements ─────────────────────────────────────────────
+
+export interface ConductAgreement {
+  id: string
+  profile_id: string
+  agreed_at: string
+  version: number
+  ip_address: string | null
+}
+
+// ─── Task Requests ──────────────────────────────────────────────────
+
+export type TaskRequestStatus =
+  | 'pending' | 'accepted' | 'declined' | 'hired_out' | 'completed' | 'canceled'
+
+export interface TaskRequest {
+  id: string
+  match_id: string
+  client_id: string
+  baddie_id: string
+  client?: Profile
+  baddie?: Profile
+  title: string
+  description: string | null
+  status: TaskRequestStatus
+  hired_out: boolean
+  hired_out_cost: number | null
+  hired_out_vendor: string | null
+  completed_at: string | null
+  created_at: string
+}
+
+// ─── Home Inventory ─────────────────────────────────────────────────
+
+export interface InventoryRoom {
+  id: string
+  client_id: string
+  name: string
+  sort_order: number
+  items?: InventoryItem[]
+  created_at: string
+}
+
+export interface InventoryItem {
+  id: string
+  room_id: string
+  item_name: string
+  quantity: number
+  restock_threshold: number
+  needs_restock: boolean
+  last_checked_at: string | null
+  last_checked_by: string | null
+  notes: string | null
+  created_at: string
+}
+
+// ─── Shift Recordings ───────────────────────────────────────────────
+
+export interface ShiftRecording {
+  id: string
+  shift_id: string
+  baddie_id: string
+  file_path: string
+  file_size: number
+  duration_seconds: number | null
+  uploaded_at: string
+}
+
+// ─── Bestowment (data model only) ──────────────────────────────────
+
+export type BestowBuckReason = 'daily_award' | 'received_bestowment' | 'gave_bestowment'
+
+export interface BestowBuckLedger {
+  id: string
+  profile_id: string
+  amount: number
+  reason: BestowBuckReason
+  related_id: string | null
+  created_at: string
+}
+
+export interface Bestowment {
+  id: string
+  giver_id: string
+  receiver_id: string
+  shift_id: string | null
+  message: string | null
+  bucks_amount: number
   created_at: string
 }

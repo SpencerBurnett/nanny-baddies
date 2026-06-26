@@ -2,7 +2,8 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth'
 import {
   LayoutDashboard, User, CheckSquare, Calendar, MessageSquare, CreditCard,
-  Users, UserPlus, GitMerge, CalendarClock, DollarSign, Settings, LogOut, Briefcase
+  Users, UserPlus, GitMerge, CalendarClock, DollarSign, Settings, LogOut, Briefcase,
+  FileText, ClipboardList, Package, Mic, FileAudio
 } from 'lucide-react'
 import type { Role } from '../../types'
 
@@ -18,6 +19,9 @@ const navItems: Record<Role, NavItem[]> = {
     { label: 'My Profile', to: '/portal/profile', icon: User },
     { label: 'Checklist', to: '/portal/checklist', icon: CheckSquare },
     { label: 'Schedule', to: '/portal/schedule', icon: Calendar },
+    { label: 'Requests', to: '/portal/requests', icon: ClipboardList },
+    { label: 'Inventory', to: '/portal/inventory', icon: Package },
+    { label: 'Agreement', to: '/portal/agreement', icon: FileText },
     { label: 'Messages', to: '/portal/messages', icon: MessageSquare },
     { label: 'Billing', to: '/portal/billing', icon: CreditCard },
   ],
@@ -25,6 +29,9 @@ const navItems: Record<Role, NavItem[]> = {
     { label: 'Dashboard', to: '/b', icon: LayoutDashboard },
     { label: 'My Clients', to: '/b/clients', icon: Users },
     { label: 'Schedule', to: '/b/schedule', icon: Calendar },
+    { label: 'Requests', to: '/b/requests', icon: ClipboardList },
+    { label: 'Recording', to: '/b/recording', icon: Mic },
+    { label: 'Inventory', to: '/b/inventory', icon: Package },
     { label: 'Earnings', to: '/b/earnings', icon: DollarSign },
     { label: 'Messages', to: '/b/messages', icon: MessageSquare },
   ],
@@ -35,6 +42,8 @@ const navItems: Record<Role, NavItem[]> = {
     { label: 'Baddies', to: '/admin/baddies', icon: Briefcase },
     { label: 'Matching', to: '/admin/matching', icon: GitMerge },
     { label: 'Shifts', to: '/admin/shifts', icon: CalendarClock },
+    { label: 'Recordings', to: '/admin/recordings', icon: FileAudio },
+    { label: 'Inventory', to: '/admin/inventory', icon: Package },
     { label: 'Payments', to: '/admin/payments', icon: DollarSign },
     { label: 'Messages', to: '/admin/messages', icon: MessageSquare },
     { label: 'Settings', to: '/admin/settings', icon: Settings },

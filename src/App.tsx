@@ -17,6 +17,9 @@ import ClientChecklist from './pages/client/Checklist'
 import ClientSchedule from './pages/client/Schedule'
 import ClientMessages from './pages/client/Messages'
 import ClientBilling from './pages/client/Billing'
+import ClientConductAgreement from './pages/client/ConductAgreement'
+import ClientTaskRequests from './pages/client/TaskRequests'
+import ClientInventory from './pages/client/Inventory'
 
 import BaddieDashboard from './pages/baddie/Dashboard'
 import BaddieClients from './pages/baddie/Clients'
@@ -24,6 +27,9 @@ import BaddieSchedule from './pages/baddie/Schedule'
 import ActiveShift from './pages/baddie/ActiveShift'
 import BaddieEarnings from './pages/baddie/Earnings'
 import BaddieMessages from './pages/baddie/Messages'
+import BaddieTaskRequests from './pages/baddie/TaskRequests'
+import BaddieRecording from './pages/baddie/Recording'
+import BaddieInventory from './pages/baddie/Inventory'
 
 import AdminDashboard from './pages/admin/Dashboard'
 import AdminApplications from './pages/admin/Applications'
@@ -34,6 +40,8 @@ import ShiftScheduler from './pages/admin/ShiftScheduler'
 import Payments from './pages/admin/Payments'
 import AdminMessages from './pages/admin/Messages'
 import AdminSettings from './pages/admin/Settings'
+import AdminRecordings from './pages/admin/Recordings'
+import AdminInventory from './pages/admin/Inventory'
 
 function PublicLayout() {
   return (
@@ -78,6 +86,9 @@ export default function App() {
         <Route path="schedule" element={<ClientSchedule />} />
         <Route path="messages" element={<ClientMessages />} />
         <Route path="billing" element={<ClientBilling />} />
+        <Route path="agreement" element={<ClientConductAgreement />} />
+        <Route path="requests" element={<ClientTaskRequests />} />
+        <Route path="inventory" element={<ClientInventory />} />
       </Route>
 
       {/* Baddie Portal */}
@@ -95,6 +106,9 @@ export default function App() {
         <Route path="shift/:shiftId" element={<ActiveShift />} />
         <Route path="earnings" element={<BaddieEarnings />} />
         <Route path="messages" element={<BaddieMessages />} />
+        <Route path="requests" element={<BaddieTaskRequests />} />
+        <Route path="recording" element={<BaddieRecording />} />
+        <Route path="inventory" element={<BaddieInventory />} />
       </Route>
 
       {/* Admin CRM */}
@@ -115,6 +129,8 @@ export default function App() {
         <Route path="payments" element={<Payments />} />
         <Route path="messages" element={<AdminMessages />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="recordings" element={<AdminRecordings />} />
+        <Route path="inventory" element={<AdminInventory />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

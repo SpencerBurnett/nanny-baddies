@@ -12,6 +12,8 @@ interface FormData {
   phone: string
   age: string
   neighborhood: string
+  preferredName: string
+  preferredTitle: string
 
   // Step 2: Lifestyle
   coffeeOrder: string
@@ -43,6 +45,7 @@ interface FormData {
 
 const initialForm: FormData = {
   firstName: '', lastName: '', email: '', phone: '', age: '', neighborhood: '',
+  preferredName: '', preferredTitle: '',
   coffeeOrder: '', waterPreference: '', allergies: '', snackPreferences: '',
   condiments: '', cannabis: '', supplementSchedule: '', conversationPreference: '',
   homeType: '', bedMakingStandard: '', preferredDrinkware: '', temperaturePreference: '',
@@ -199,6 +202,20 @@ export default function Apply() {
                   <input type="text" className={inputClass} value={form.neighborhood} onChange={(e) => update('neighborhood', e.target.value)} placeholder="East Austin" required />
                 </Field>
               </div>
+              <Field label="What should your Nanny Baddie call you?">
+                <select className={selectClass} value={form.preferredTitle} onChange={(e) => update('preferredTitle', e.target.value)}>
+                  <option value="">Select...</option>
+                  <option value="first_name">My first name</option>
+                  <option value="mr">Mr. {form.lastName || '[Last Name]'}</option>
+                  <option value="sir">Sir</option>
+                  <option value="nickname">A nickname (specify below)</option>
+                </select>
+              </Field>
+              {form.preferredTitle === 'nickname' && (
+                <Field label="Preferred nickname">
+                  <input type="text" className={inputClass} value={form.preferredName} onChange={(e) => update('preferredName', e.target.value)} placeholder="Big Dog, Chief, Boss..." />
+                </Field>
+              )}
             </motion.div>
           )}
 
@@ -317,9 +334,9 @@ export default function Apply() {
               <Field label="Preferred frequency">
                 <select className={selectClass} value={form.frequency} onChange={(e) => update('frequency', e.target.value)} required>
                   <option value="">Select your tier...</option>
-                  <option value="1x">Standard &mdash; 1x/week ($1,200/mo)</option>
-                  <option value="2x">Premium &mdash; 2x/week ($2,400/mo)</option>
-                  <option value="3x">Elite &mdash; 3x/week ($3,600/mo)</option>
+                  <option value="1x">Standard &mdash; 1x/week ($3,600/quarter)</option>
+                  <option value="2x">Premium &mdash; 2x/week ($7,200/quarter)</option>
+                  <option value="3x">Elite &mdash; 3x/week ($10,800/quarter)</option>
                 </select>
               </Field>
 

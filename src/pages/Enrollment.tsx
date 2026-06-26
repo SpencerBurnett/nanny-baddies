@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Check, ArrowRight } from 'lucide-react'
+import { Check, ArrowRight, Sparkles } from 'lucide-react'
 import * as api from '../lib/api'
 import type { Tier } from '../types'
 
@@ -11,7 +11,7 @@ const fallbackTiers: Tier[] = [
     slug: 'standard',
     name: 'Standard',
     shifts_per_week: 1,
-    monthly_price: 1200,
+    monthly_price: 3600,
     stripe_price_id: '',
     features: ['1 shift per week (4 hours)', 'Personalized checklist', 'Dedicated Nanny Baddie', 'Full client profile', 'In-app messaging'],
     created_at: '',
@@ -21,9 +21,9 @@ const fallbackTiers: Tier[] = [
     slug: 'premium',
     name: 'Premium',
     shifts_per_week: 2,
-    monthly_price: 2400,
+    monthly_price: 7200,
     stripe_price_id: '',
-    features: ['2 shifts per week (4 hours each)', 'Personalized checklist', 'Dedicated Nanny Baddie', 'Full client profile', 'In-app messaging', 'Priority scheduling', 'House sitting access'],
+    features: ['2 shifts per week (4 hours each)', 'Personalized checklist', 'Dedicated Nanny Baddie', 'Full client profile', 'In-app messaging', 'Priority scheduling', 'Home inventory management'],
     created_at: '',
   },
   {
@@ -31,9 +31,9 @@ const fallbackTiers: Tier[] = [
     slug: 'elite',
     name: 'Elite',
     shifts_per_week: 3,
-    monthly_price: 3600,
+    monthly_price: 10800,
     stripe_price_id: '',
-    features: ['3 shifts per week (4 hours each)', 'Personalized checklist', 'Dedicated Nanny Baddie', 'Full client profile', 'In-app messaging', 'Priority scheduling', 'House sitting access', 'Event production included', 'Travel coverage'],
+    features: ['3 shifts per week (4 hours each)', 'Personalized checklist', 'Dedicated Nanny Baddie', 'Full client profile', 'In-app messaging', 'Priority scheduling', 'Home inventory management', 'Event production included', 'Travel coverage'],
     created_at: '',
   },
 ]
@@ -56,7 +56,10 @@ export default function Enrollment() {
       alert('Stripe integration pending — checkout will be connected once Stripe products are created.')
       return
     }
-    // In production: call api.createCheckoutSession(tier.slug)
+  }
+
+  const handleTrialCheckout = () => {
+    alert('Stripe integration pending — paid trial checkout ($2,000) will be connected once Stripe products are created.')
   }
 
   return (
@@ -74,8 +77,34 @@ export default function Enrollment() {
             Choose your membership
           </h1>
           <p className="mt-4 text-muted max-w-lg mx-auto">
-            90-day commitment. 4-hour shifts. $75/hour. Cancel after any cycle.
+            90-day commitment. 4-hour shifts. $75/hour. Billed quarterly.
           </p>
+        </motion.div>
+
+        {/* Paid Trial CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-gradient-to-r from-gold/10 to-gold/5 border border-gold/20 rounded-2xl p-6 md:p-8 mb-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center shrink-0 mt-0.5">
+              <Sparkles className="w-5 h-5 text-gold" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-warm-white">Experience it first</h3>
+              <p className="text-sm text-muted mt-1 max-w-md">
+                3 orientation meetings + 1 full day of service. See the magic before you commit to a quarterly membership.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleTrialCheckout}
+            className="shrink-0 px-6 py-3 bg-gold/20 text-gold border border-gold/30 font-medium text-sm rounded-xl hover:bg-gold/30 transition-all cursor-pointer"
+          >
+            Paid Trial — $2,000
+          </button>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -100,12 +129,15 @@ export default function Enrollment() {
               <h3 className="text-lg font-semibold text-warm-white">{tier.name}</h3>
               <p className="text-sm text-muted mt-1">{tier.shifts_per_week}x / week</p>
 
-              <div className="mt-6 mb-6">
+              <div className="mt-6 mb-1">
                 <span className="text-4xl font-display font-semibold text-warm-white">
                   ${tier.monthly_price.toLocaleString()}
                 </span>
-                <span className="text-muted text-sm">/month</span>
+                <span className="text-muted text-sm">/quarter</span>
               </div>
+              <p className="text-xs text-soft mb-6">
+                ${Math.round(tier.monthly_price / 3).toLocaleString()}/mo equivalent
+              </p>
 
               <ul className="space-y-2.5">
                 {tier.features.map((f) => (
@@ -116,7 +148,6 @@ export default function Enrollment() {
                 ))}
               </ul>
 
-              {/* Selection indicator */}
               <div className={`mt-6 flex items-center justify-center py-2.5 rounded-lg border text-sm font-medium transition-all ${
                 selected === tier.slug
                   ? 'bg-gold text-midnight border-gold'
@@ -136,7 +167,7 @@ export default function Enrollment() {
             Continue to Checkout <ArrowRight className="w-5 h-5" />
           </button>
           <p className="mt-4 text-xs text-soft">
-            90-day cycle billed monthly. You can adjust or cancel at the end of any cycle.
+            90-day cycle billed quarterly. Cancel at the end of any cycle with 30-day notice.
           </p>
         </div>
       </div>
