@@ -191,18 +191,25 @@ export default function ForClients() {
               For Clients
             </span>
             <h1 className="font-display text-5xl md:text-6xl font-medium text-warm-white leading-tight">
-              Your personal house management{' '}
-              <span className="italic text-gold">concierge</span>
+              Absolute freedom{' '}
+              <span className="italic text-gold">for your ADHD</span>
             </h1>
             <p className="mt-6 text-lg text-muted max-w-2xl mx-auto leading-relaxed">
-              Build your checklist from 13 service categories. She executes it every shift.
-              You come home to a life that runs itself.
+              You build. She executes. 13 service categories, a personalized checklist,
+              and a dedicated Nanny Baddie who studies your life before she ever walks in.
+              Come home to a life that runs itself.
             </p>
-            <div className="mt-10">
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button to="/apply" size="lg">
                 Apply Now <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
+              <Button to="/enroll?trial=true" variant="outline" size="lg">
+                Try It First — $2,000
+              </Button>
             </div>
+            <p className="mt-4 text-xs text-soft">
+              Paid trial includes 3 orientation meetings + 1 full day of service. No commitment.
+            </p>
           </motion.div>
         </div>
       </section>
@@ -249,29 +256,41 @@ export default function ForClients() {
         <div className="max-w-4xl mx-auto">
           <SectionHeading
             label="Pricing"
-            title="Simple, transparent pricing"
-            subtitle="$65 per hour. 4-hour shifts. 90-day commitments. Pick your frequency."
+            title="Simple, quarterly billing"
+            subtitle="90-day cycles billed quarterly. Cancel at the end of any cycle with 30-day notice."
           />
 
           <div className="bg-slate-dark/50 border border-white/5 rounded-2xl overflow-hidden">
             <div className="grid grid-cols-4 gap-px bg-white/5">
               <div className="bg-charcoal p-5 text-xs font-semibold text-muted uppercase tracking-wider">Tier</div>
               <div className="bg-charcoal p-5 text-xs font-semibold text-muted uppercase tracking-wider">Frequency</div>
-              <div className="bg-charcoal p-5 text-xs font-semibold text-muted uppercase tracking-wider">Monthly</div>
-              <div className="bg-charcoal p-5 text-xs font-semibold text-muted uppercase tracking-wider">90-Day Total</div>
+              <div className="bg-charcoal p-5 text-xs font-semibold text-muted uppercase tracking-wider">Per Quarter</div>
+              <div className="bg-charcoal p-5 text-xs font-semibold text-muted uppercase tracking-wider">Monthly Equiv.</div>
             </div>
             {[
-              { tier: 'Standard', freq: '1x / week', monthly: '$1,040', total: '$3,120' },
-              { tier: 'Premium', freq: '2x / week', monthly: '$2,080', total: '$6,240' },
-              { tier: 'Elite', freq: '3x / week', monthly: '$3,120', total: '$9,360' },
+              { tier: 'Standard', freq: '1x / week', quarterly: '$3,600', monthly: '$1,200/mo' },
+              { tier: 'Premium', freq: '2x / week', quarterly: '$7,200', monthly: '$2,400/mo' },
+              { tier: 'Elite', freq: '3x / week', quarterly: '$10,800', monthly: '$3,600/mo' },
             ].map((row) => (
               <div key={row.tier} className="grid grid-cols-4 gap-px bg-white/5">
                 <div className="bg-slate-dark/30 p-5 text-sm font-medium text-warm-white">{row.tier}</div>
                 <div className="bg-slate-dark/30 p-5 text-sm text-muted">{row.freq}</div>
-                <div className="bg-slate-dark/30 p-5 text-sm text-warm-white">{row.monthly}</div>
-                <div className="bg-slate-dark/30 p-5 text-sm text-gold font-medium">{row.total}</div>
+                <div className="bg-slate-dark/30 p-5 text-sm text-gold font-medium">{row.quarterly}</div>
+                <div className="bg-slate-dark/30 p-5 text-sm text-soft">{row.monthly}</div>
               </div>
             ))}
+          </div>
+
+          <div className="mt-6 bg-charcoal/50 border border-gold/10 rounded-xl p-6 text-center">
+            <p className="text-sm text-muted mb-3">
+              Not ready for a 90-day commitment? <span className="text-gold font-medium">Try us first.</span>
+            </p>
+            <p className="text-xs text-soft mb-4">
+              $2,000 gets you 3 orientation meetings and 1 full day of service. Experience the difference before you commit.
+            </p>
+            <Button to="/enroll?trial=true" variant="outline" size="sm">
+              Start with a Paid Trial
+            </Button>
           </div>
         </div>
       </section>
@@ -302,15 +321,59 @@ export default function ForClients() {
         </div>
       </section>
 
+      {/* Conduct Preview */}
+      <section className="py-24 px-6 bg-charcoal/30">
+        <div className="max-w-3xl mx-auto">
+          <SectionHeading
+            label="Our Standards"
+            title="A professional relationship, always"
+            subtitle="Every client signs a conduct agreement before their first shift. These rules protect both you and your Nanny Baddie."
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-charcoal/50 border border-green-500/10 rounded-xl p-6">
+              <h3 className="text-sm font-semibold text-green-400 mb-4 uppercase tracking-wider">The Do&apos;s</h3>
+              <ul className="space-y-2.5 text-sm text-muted">
+                {['Compliment professionally', 'Use her approved name', 'Treat her as a business partner', 'Communicate through the app', 'Tip digitally through the platform'].map((item) => (
+                  <li key={item} className="flex items-center gap-2.5">
+                    <Check className="w-3.5 h-3.5 text-green-400/60 shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-charcoal/50 border border-red-500/10 rounded-xl p-6">
+              <h3 className="text-sm font-semibold text-red-400 mb-4 uppercase tracking-wider">Zero Tolerance</h3>
+              <ul className="space-y-2.5 text-sm text-muted">
+                {['No physical contact', 'No personal info exchange', 'No contact outside the app', 'No cash tips', 'No adult activities during service'].map((item) => (
+                  <li key={item} className="flex items-center gap-2.5">
+                    <span className="w-1.5 h-1.5 bg-red-400/60 rounded-full shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <p className="text-xs text-soft text-center mt-6">
+            All shifts are recorded for safety. Violations result in immediate removal from the platform.
+          </p>
+        </div>
+      </section>
+
       {/* Bottom CTA */}
       <section className="py-20 px-6 bg-gradient-to-t from-charcoal to-midnight text-center">
         <h2 className="font-display text-3xl md:text-4xl font-medium text-warm-white mb-4">
           Ready to upgrade your life?
         </h2>
         <p className="text-muted mb-8">Applications are reviewed within 48 hours.</p>
-        <Button to="/apply" size="lg">
-          Apply as a Client
-        </Button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button to="/apply" size="lg">
+            Apply as a Client
+          </Button>
+          <Button to="/enroll?trial=true" variant="outline" size="lg">
+            Try It First — $2,000
+          </Button>
+        </div>
       </section>
     </div>
   )

@@ -59,12 +59,13 @@ export default function ForBaddies() {
               For Baddies
             </span>
             <h1 className="font-display text-5xl md:text-6xl font-medium text-warm-white leading-tight">
-              Get paid to be{' '}
-              <span className="italic text-gold">exceptional</span>
+              Capitalize on your beauty{' '}
+              <span className="italic text-gold">with self-respect</span>
             </h1>
             <p className="mt-6 text-lg text-muted max-w-2xl mx-auto leading-relaxed">
-              $35/hour. Premium clients. Flexible shifts. Professional environment.
-              This is domestic lifestyle work elevated to a career.
+              $35/hour. Premium clients. Flexible shifts. Full professional protection.
+              This is domestic lifestyle work elevated to a career — with a training program
+              that builds skills you keep forever.
             </p>
             <div className="mt-10">
               <Button to="/apply-baddie" size="lg">
@@ -163,6 +164,30 @@ export default function ForBaddies() {
                 </motion.li>
               ))}
             </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Training */}
+      <section className="py-24 px-6 bg-charcoal/30">
+        <div className="max-w-3xl mx-auto">
+          <SectionHeading
+            label="Training"
+            title="The Wifey Train"
+            subtitle="A personal development program disguised as job training. You leave with skills that transfer to every area of life."
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { title: 'Bootcamp', desc: 'Multi-day intensive before your first solo shift. Learn the systems, the standards, the craft.' },
+              { title: 'Friday Shadows', desc: 'Shadow experienced Baddies on Fridays. Watch, learn, ask questions in a real client environment.' },
+              { title: 'Empathy Training', desc: 'Learn to anticipate unstated needs. Visualize the client\'s life and deliver before they ask.' },
+            ].map((item) => (
+              <div key={item.title} className="bg-charcoal/50 border border-white/5 rounded-xl p-6">
+                <h3 className="text-sm font-semibold text-gold mb-2">{item.title}</h3>
+                <p className="text-xs text-muted leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
