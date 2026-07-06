@@ -1,8 +1,11 @@
 export type Role = 'client' | 'baddie' | 'admin'
 
 export type ProfileStatus =
-  | 'pending' | 'lead' | 'enrolled' | 'active' | 'paused' | 'churned'
+  | 'pending' | 'lead' | 'vetted' | 'orientation_booked' | 'orientation_attended'
+  | 'terms_signed' | 'enrolled' | 'active' | 'paused' | 'churned'
   | 'applicant' | 'bootcamp' | 'inactive'
+
+export type PreferredTitle = 'first_name' | 'sir' | 'boss' | 'mr_house' | 'nickname'
 
 export interface Profile {
   id: string
@@ -41,7 +44,7 @@ export interface Tier {
   slug: string
   name: string
   shifts_per_week: number
-  monthly_price: number
+  quarterly_price: number
   stripe_price_id: string
   features: string[]
   created_at: string
@@ -84,7 +87,7 @@ export interface ClientProfile {
   scent_preference: string | null
   music_preference: string | null
   preferred_name: string | null
-  preferred_title: 'first_name' | 'mr' | 'sir' | 'nickname' | null
+  preferred_title: PreferredTitle | null
   has_pets: boolean
   pet_details: string | null
   has_plants: boolean
@@ -113,6 +116,7 @@ export interface BaddieProfile {
   strength_description: string | null
   comfort_level: 'very' | 'comfortable' | 'growing' | null
   boundaries_agreement: 'agree' | 'questions' | null
+  accepted_names: string[]
   additional_notes: string | null
   hourly_rate: number
   created_at: string
@@ -207,6 +211,8 @@ export interface Conversation {
   match_id: string
   client_id: string
   baddie_id: string
+  client?: Profile
+  baddie?: Profile
   created_at: string
 }
 
@@ -245,6 +251,25 @@ export interface Payout {
   period_start: string
   period_end: string
   created_at: string
+}
+
+// ─── Orientations (in-person showcase at the model house) ──────────
+
+export type OrientationStatus = 'requested' | 'scheduled' | 'attended' | 'no_show' | 'canceled'
+
+export interface Orientation {
+  id: string
+  client_id: string
+  client?: Profile
+  scheduled_date: string | null
+  scheduled_time: string | null
+  location: string | null
+  status: OrientationStatus
+  attended_at: string | null
+  notes: string | null
+  created_by: string | null
+  created_at: string
+  updated_at: string
 }
 
 // ─── Conduct Agreements ─────────────────────────────────────────────

@@ -1,9 +1,12 @@
+import { useEffect, useRef, useState } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth'
+import * as api from '../../lib/api'
+import { subscribeToInbox } from '../../lib/realtime'
 import {
   LayoutDashboard, User, CheckSquare, Calendar, MessageSquare, CreditCard,
   Users, UserPlus, GitMerge, CalendarClock, DollarSign, Settings, LogOut, Briefcase,
-  FileText, ClipboardList, Package, Mic, FileAudio
+  FileText, ClipboardList, Package, Mic, FileAudio, CalendarCheck
 } from 'lucide-react'
 import type { Role } from '../../types'
 
@@ -21,6 +24,7 @@ const navItems: Record<Role, NavItem[]> = {
     { label: 'Schedule', to: '/portal/schedule', icon: Calendar },
     { label: 'Requests', to: '/portal/requests', icon: ClipboardList },
     { label: 'Inventory', to: '/portal/inventory', icon: Package },
+    { label: 'Orientation', to: '/portal/orientation', icon: CalendarCheck },
     { label: 'Agreement', to: '/portal/agreement', icon: FileText },
     { label: 'Messages', to: '/portal/messages', icon: MessageSquare },
     { label: 'Billing', to: '/portal/billing', icon: CreditCard },
@@ -42,6 +46,7 @@ const navItems: Record<Role, NavItem[]> = {
     { label: 'Baddies', to: '/admin/baddies', icon: Briefcase },
     { label: 'Matching', to: '/admin/matching', icon: GitMerge },
     { label: 'Shifts', to: '/admin/shifts', icon: CalendarClock },
+    { label: 'Orientations', to: '/admin/orientations', icon: CalendarCheck },
     { label: 'Recordings', to: '/admin/recordings', icon: FileAudio },
     { label: 'Inventory', to: '/admin/inventory', icon: Package },
     { label: 'Payments', to: '/admin/payments', icon: DollarSign },
@@ -61,6 +66,25 @@ export default function PortalShell({ role }: { role: Role }) {
   const location = useLocation()
   const navigate = useNavigate()
   const items = navItems[role]
+
+  const [unread, setUnread] = useState(0)
+  const onMessages = location.pathname.endsWith('/messages')
+  const onMessagesRef = useRef(onMessages)
+  onMessagesRef.current = onMessages
+
+  useEffect(() => {
+    if (!profile) return
+    let active = true
+    api.getUnreadCount(profile.id).then((n) => { if (active) setUnread(n) })
+    const unsub = subscribeToInbox(profile.id, () => {
+      if (!onMessagesRef.current) setUnread((prev) => prev + 1)
+    })
+    return () => { active = false; unsub() }
+  }, [profile])
+
+  useEffect(() => {
+    if (onMessages) setUnread(0)
+  }, [onMessages, location.pathname])
 
   const handleSignOut = async () => {
     await signOut()
@@ -97,7 +121,12 @@ export default function PortalShell({ role }: { role: Role }) {
               }`}
             >
               <item.icon className="w-4 h-4" />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {item.label === 'Messages' && unread > 0 && (
+                <span className="ml-auto min-w-5 h-5 px-1.5 flex items-center justify-center rounded-full bg-gold text-midnight text-[11px] font-semibold">
+                  {unread > 9 ? '9+' : unread}
+                </span>
+              )}
             </Link>
           ))}
         </nav>

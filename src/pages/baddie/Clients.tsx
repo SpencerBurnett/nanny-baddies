@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../lib/auth'
 import * as api from '../../lib/api'
+import { displayPreferredName } from '../../lib/conductRules'
 import type { Match, ClientProfile } from '../../types'
-import { User, ChevronDown, ChevronUp } from 'lucide-react'
+import { User, ChevronDown, ChevronUp, IdCard } from 'lucide-react'
 
 export default function BaddieClients() {
   const { profile } = useAuth()
@@ -66,6 +67,15 @@ export default function BaddieClients() {
 
                 {isOpen && cp && (
                   <div className="px-5 pb-5 border-t border-white/5 pt-5">
+                    <div className="mb-5 flex items-center gap-3 bg-gold/5 border border-gold/20 rounded-lg px-4 py-3">
+                      <IdCard className="w-4 h-4 text-gold shrink-0" />
+                      <p className="text-sm text-muted">
+                        Address him as{' '}
+                        <span className="text-gold font-semibold">
+                          {displayPreferredName(cp.preferred_title, client.first_name, cp.preferred_name)}
+                        </span>
+                      </p>
+                    </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                       {cp.coffee_order && <ProfileField label="Coffee" value={cp.coffee_order} />}
                       {cp.water_preference && <ProfileField label="Water" value={cp.water_preference} />}

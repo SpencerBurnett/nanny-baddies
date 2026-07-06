@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import * as api from '../lib/api'
+import { APPROVED_NAMES } from '../lib/conductRules'
 
 interface FormData {
   // Step 1: About You
@@ -31,6 +32,7 @@ interface FormData {
   // Step 4: About You (personality)
   strengthDescription: string
   comfortLevel: string
+  acceptedNames: string[]
   boundariesAgreement: string
   additionalNotes: string
 }
@@ -39,7 +41,7 @@ const initialForm: FormData = {
   firstName: '', lastName: '', email: '', phone: '', age: '', neighborhood: '', instagram: '',
   currentJob: '', relevantExperience: '', cleaningExperience: '', cookingSkills: '', whyJoin: '',
   availability: [], shiftsPerWeek: '', startDate: '', hasTransportation: '', willingToBootcamp: '',
-  strengthDescription: '', comfortLevel: '', boundariesAgreement: '', additionalNotes: '',
+  strengthDescription: '', comfortLevel: '', acceptedNames: [], boundariesAgreement: '', additionalNotes: '',
 }
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -65,6 +67,15 @@ export default function ApplyBaddie() {
 
   const update = (field: keyof FormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const toggleName = (name: string) => {
+    setForm((prev) => ({
+      ...prev,
+      acceptedNames: prev.acceptedNames.includes(name)
+        ? prev.acceptedNames.filter((n) => n !== name)
+        : [...prev.acceptedNames, name],
+    }))
   }
 
   const toggleDay = (day: string) => {
@@ -286,6 +297,29 @@ export default function ApplyBaddie() {
                   <option value="comfortable">Comfortable &mdash; I adapt quickly</option>
                   <option value="growing">Growing into it &mdash; ready to learn</option>
                 </select>
+              </Field>
+
+              <Field label="Which names are you comfortable being asked to use?">
+                <p className="text-xs text-soft mb-3">Clients may only be addressed by an approved term. Pick the ones you&apos;ll use — you&apos;re never required to use one you didn&apos;t select.</p>
+                <div className="flex flex-wrap gap-2">
+                  {['First name', ...APPROVED_NAMES].map((name) => {
+                    const on = form.acceptedNames.includes(name)
+                    return (
+                      <button
+                        key={name}
+                        type="button"
+                        onClick={() => toggleName(name)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer border ${
+                          on
+                            ? 'bg-gold/20 text-gold border-gold/30'
+                            : 'bg-slate-dark/50 text-muted border-white/10 hover:border-white/20'
+                        }`}
+                      >
+                        {name}
+                      </button>
+                    )
+                  })}
+                </div>
               </Field>
 
               <Field label="Boundary agreement">

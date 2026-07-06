@@ -1,29 +1,10 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Shield, Check } from 'lucide-react'
+import { Shield, Check, X } from 'lucide-react'
 import { useAuth } from '../../lib/auth'
 import * as api from '../../lib/api'
+import { DOS, DONTS, APPROVED_NAMES, BANNED_NAMES } from '../../lib/conductRules'
 import type { ConductAgreement as ConductAgreementType } from '../../types'
-
-const DOS = [
-  'Compliment professionally ("you look great today," "thanks for the hard work")',
-  'Use approved names only (first name, Mr./Ms. LastName, Sir, or agreed nickname)',
-  'Treat your Nanny Baddie as a business partner',
-  'Communicate preferences through the app',
-  'Provide feedback through the rating system after each shift',
-  'Keep your home safe and accessible during scheduled shifts',
-]
-
-const DONTS = [
-  'No touching — zero-tolerance policy, immediate removal',
-  'No personal information exchange (phone numbers, social media)',
-  'No contact outside of the app — violation results in excommunication',
-  'No cash tips — all compensation flows through the platform',
-  'No adult activities during service hours',
-  'No hanging out after scheduled work hours',
-  'No pet names or sexualized language of any kind',
-  'No requests that violate the baddie\'s stated boundaries',
-]
 
 export default function ConductAgreement() {
   const { profile } = useAuth()
@@ -113,6 +94,36 @@ export default function ConductAgreement() {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div className="bg-charcoal/50 border border-white/5 rounded-xl p-6">
+          <h3 className="text-sm font-semibold text-warm-white mb-4">How you may address her</h3>
+          <p className="text-xs text-muted mb-4">
+            Pick your preferred name in your profile. These are the only approved address terms —
+            the banned list applies no matter what.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-semibold text-green-400 mb-2 uppercase tracking-wider">Approved</p>
+              <div className="flex flex-wrap gap-2">
+                {['First name', ...APPROVED_NAMES, 'Agreed nickname'].map((n) => (
+                  <span key={n} className="px-2.5 py-1 rounded-full bg-green-500/10 text-green-400 text-xs border border-green-500/20">
+                    {n}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-red-400 mb-2 uppercase tracking-wider">Banned</p>
+              <div className="flex flex-wrap gap-2">
+                {BANNED_NAMES.filter((n) => !n.includes(' ') || n === 'pookie bear').map((n) => (
+                  <span key={n} className="px-2.5 py-1 rounded-full bg-red-500/10 text-red-400 text-xs border border-red-500/20 inline-flex items-center gap-1">
+                    <X className="w-3 h-3" />{n}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="bg-charcoal/50 border border-white/5 rounded-xl p-6">

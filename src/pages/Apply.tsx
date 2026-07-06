@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import * as api from '../lib/api'
+import { NAME_OPTIONS, isBannedName } from '../lib/conductRules'
 
 interface FormData {
   // Step 1: Basics
@@ -205,15 +206,19 @@ export default function Apply() {
               <Field label="What should your Nanny Baddie call you?">
                 <select className={selectClass} value={form.preferredTitle} onChange={(e) => update('preferredTitle', e.target.value)}>
                   <option value="">Select...</option>
-                  <option value="first_name">My first name</option>
-                  <option value="mr">Mr. {form.lastName || '[Last Name]'}</option>
-                  <option value="sir">Sir</option>
-                  <option value="nickname">A nickname (specify below)</option>
+                  {NAME_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
                 </select>
               </Field>
               {form.preferredTitle === 'nickname' && (
                 <Field label="Preferred nickname">
-                  <input type="text" className={inputClass} value={form.preferredName} onChange={(e) => update('preferredName', e.target.value)} placeholder="Big Dog, Chief, Boss..." />
+                  <input type="text" className={inputClass} value={form.preferredName} onChange={(e) => update('preferredName', e.target.value)} placeholder="Chief, Captain, Ace..." />
+                  {isBannedName(form.preferredName) && (
+                    <p className="mt-2 text-xs text-red-400">
+                      That name is on the banned list. Nicknames can&apos;t be sexual or pet-name style.
+                    </p>
+                  )}
                 </Field>
               )}
             </motion.div>
@@ -385,7 +390,12 @@ export default function Apply() {
             )}
 
             {step < 3 ? (
-              <button type="button" onClick={next} className="flex items-center gap-2 px-7 py-3 bg-gold text-midnight font-medium rounded-xl hover:bg-gold-light transition-all text-sm">
+              <button
+                type="button"
+                onClick={next}
+                disabled={step === 0 && form.preferredTitle === 'nickname' && isBannedName(form.preferredName)}
+                className="flex items-center gap-2 px-7 py-3 bg-gold text-midnight font-medium rounded-xl hover:bg-gold-light transition-all text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              >
                 Continue <ArrowRight className="w-4 h-4" />
               </button>
             ) : (

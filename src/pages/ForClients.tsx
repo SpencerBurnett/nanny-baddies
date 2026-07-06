@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Check, ArrowRight } from 'lucide-react'
 import Button from '../components/ui/Button'
 import SectionHeading from '../components/ui/SectionHeading'
+import { DOS, DONTS } from '../lib/conductRules'
 
 const serviceCategories = [
   {
@@ -334,9 +335,9 @@ export default function ForClients() {
             <div className="bg-charcoal/50 border border-green-500/10 rounded-xl p-6">
               <h3 className="text-sm font-semibold text-green-400 mb-4 uppercase tracking-wider">The Do&apos;s</h3>
               <ul className="space-y-2.5 text-sm text-muted">
-                {['Compliment professionally', 'Use her approved name', 'Treat her as a business partner', 'Communicate through the app', 'Tip digitally through the platform'].map((item) => (
-                  <li key={item} className="flex items-center gap-2.5">
-                    <Check className="w-3.5 h-3.5 text-green-400/60 shrink-0" />
+                {DOS.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5">
+                    <Check className="w-3.5 h-3.5 text-green-400/60 shrink-0 mt-0.5" />
                     {item}
                   </li>
                 ))}
@@ -345,9 +346,9 @@ export default function ForClients() {
             <div className="bg-charcoal/50 border border-red-500/10 rounded-xl p-6">
               <h3 className="text-sm font-semibold text-red-400 mb-4 uppercase tracking-wider">Zero Tolerance</h3>
               <ul className="space-y-2.5 text-sm text-muted">
-                {['No physical contact', 'No personal info exchange', 'No contact outside the app', 'No cash tips', 'No adult activities during service'].map((item) => (
-                  <li key={item} className="flex items-center gap-2.5">
-                    <span className="w-1.5 h-1.5 bg-red-400/60 rounded-full shrink-0" />
+                {DONTS.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 bg-red-400/60 rounded-full shrink-0 mt-1.5" />
                     {item}
                   </li>
                 ))}

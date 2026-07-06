@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../lib/auth'
 import * as api from '../../lib/api'
-import type { ClientProfile as ClientProfileType } from '../../types'
+import { NAME_OPTIONS, isBannedName } from '../../lib/conductRules'
+import type { ClientProfile as ClientProfileType, PreferredTitle } from '../../types'
 
 const inputClass = 'w-full bg-slate-dark/50 border border-white/10 rounded-lg px-4 py-3 text-warm-white text-sm placeholder-soft focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-colors'
 const selectClass = inputClass
@@ -73,14 +74,46 @@ export default function ClientProfile() {
         </div>
         <button
           onClick={handleSave}
-          disabled={saving}
-          className="px-6 py-2.5 bg-gold text-midnight font-medium text-sm rounded-lg hover:bg-gold-light transition-all disabled:opacity-50 cursor-pointer"
+          disabled={saving || (form.preferred_title === 'nickname' && isBannedName(form.preferred_name ?? ''))}
+          className="px-6 py-2.5 bg-gold text-midnight font-medium text-sm rounded-lg hover:bg-gold-light transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {saving ? 'Saving...' : saved ? 'Saved' : 'Save Changes'}
         </button>
       </div>
 
       <div className="bg-charcoal/50 border border-white/5 rounded-xl p-6 md:p-8 space-y-5">
+        <SectionTitle title="How She Addresses You" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <Field label="What should your Nanny Baddie call you?">
+            <select
+              className={selectClass}
+              value={form.preferred_title ?? ''}
+              onChange={(e) => update('preferred_title', (e.target.value || null) as PreferredTitle | null)}
+            >
+              <option value="">Select...</option>
+              {NAME_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </Field>
+          {form.preferred_title === 'nickname' && (
+            <Field label="Your nickname">
+              <input
+                type="text"
+                className={inputClass}
+                value={form.preferred_name ?? ''}
+                onChange={(e) => update('preferred_name', e.target.value)}
+                placeholder="Chief, Captain, Ace..."
+              />
+              {isBannedName(form.preferred_name ?? '') && (
+                <p className="mt-2 text-xs text-red-400">
+                  That name is on the banned list. Nicknames can&apos;t be sexual or pet-name style.
+                </p>
+              )}
+            </Field>
+          )}
+        </div>
+
         <SectionTitle title="Beverages" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <Field label="How do you take your coffee?">

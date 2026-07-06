@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { CONDUCT_VERSION } from './conductRules'
 import type {
   Application,
   ApplicationType,
@@ -19,6 +20,7 @@ import type {
   Conversation,
   Message,
   Earning,
+  Orientation,
   ConductAgreement,
   TaskRequest,
   TaskRequestStatus,
@@ -77,6 +79,11 @@ export async function updateApplication(
 
 export async function getProfile(id: string): Promise<Profile | null> {
   const { data } = await supabase.from('profiles').select('*').eq('id', id).single()
+  return data as Profile | null
+}
+
+export async function getProfileByEmail(email: string): Promise<Profile | null> {
+  const { data } = await supabase.from('profiles').select('*').eq('email', email).maybeSingle()
   return data as Profile | null
 }
 
@@ -340,13 +347,42 @@ export async function updateShiftChecklistItem(
 
 // ─── Conversations & Messages ────────────────────────────────────────
 
+const CONVERSATION_SELECT =
+  '*, client:profiles!conversations_client_id_fkey(*), baddie:profiles!conversations_baddie_id_fkey(*)'
+
 export async function getConversations(profileId: string): Promise<Conversation[]> {
   const { data } = await supabase
     .from('conversations')
-    .select('*')
+    .select(CONVERSATION_SELECT)
     .or(`client_id.eq.${profileId},baddie_id.eq.${profileId}`)
     .order('created_at', { ascending: false })
   return (data as Conversation[]) ?? []
+}
+
+// Admin oversight — RLS restricts this to admins.
+export async function getAllConversations(): Promise<Conversation[]> {
+  const { data } = await supabase
+    .from('conversations')
+    .select(CONVERSATION_SELECT)
+    .order('created_at', { ascending: false })
+  return (data as Conversation[]) ?? []
+}
+
+// Count of unread messages addressed to this profile (not sent by them).
+export async function getUnreadCount(profileId: string): Promise<number> {
+  const { data } = await supabase
+    .from('conversations')
+    .select('id')
+    .or(`client_id.eq.${profileId},baddie_id.eq.${profileId}`)
+  const ids = (data as { id: string }[] | null)?.map((c) => c.id) ?? []
+  if (ids.length === 0) return 0
+  const { count } = await supabase
+    .from('messages')
+    .select('id', { count: 'exact', head: true })
+    .in('conversation_id', ids)
+    .neq('sender_id', profileId)
+    .is('read_at', null)
+  return count ?? 0
 }
 
 export async function getMessages(conversationId: string, limit = 50): Promise<Message[]> {
@@ -444,8 +480,52 @@ export async function signConductAgreement(profileId: string): Promise<boolean> 
     .upsert({
       profile_id: profileId,
       agreed_at: new Date().toISOString(),
-      version: 1,
+      version: CONDUCT_VERSION,
     }, { onConflict: 'profile_id' })
+  return !error
+}
+
+// ─── Orientations ────────────────────────────────────────────────────
+
+export async function getOrientations(
+  filters?: { client_id?: string; status?: Orientation['status'] }
+): Promise<Orientation[]> {
+  let q = supabase
+    .from('orientations')
+    .select('*, client:profiles!orientations_client_id_fkey(*)')
+    .order('scheduled_date', { ascending: true, nullsFirst: false })
+  if (filters?.client_id) q = q.eq('client_id', filters.client_id)
+  if (filters?.status) q = q.eq('status', filters.status)
+  const { data } = await q
+  return (data as Orientation[]) ?? []
+}
+
+export async function createOrientation(orientation: {
+  client_id: string
+  scheduled_date?: string | null
+  scheduled_time?: string | null
+  location?: string | null
+  notes?: string | null
+  status?: Orientation['status']
+  created_by?: string | null
+}): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('orientations')
+    .insert(orientation)
+    .select('id')
+    .single()
+  if (error) return null
+  return (data as { id: string }).id
+}
+
+export async function updateOrientation(
+  id: string,
+  updates: Partial<Pick<Orientation, 'scheduled_date' | 'scheduled_time' | 'location' | 'status' | 'attended_at' | 'notes'>>
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('orientations')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
   return !error
 }
 

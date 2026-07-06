@@ -20,6 +20,7 @@ import ClientBilling from './pages/client/Billing'
 import ClientConductAgreement from './pages/client/ConductAgreement'
 import ClientTaskRequests from './pages/client/TaskRequests'
 import ClientInventory from './pages/client/Inventory'
+import ClientOrientation from './pages/client/Orientation'
 
 import BaddieDashboard from './pages/baddie/Dashboard'
 import BaddieClients from './pages/baddie/Clients'
@@ -42,6 +43,7 @@ import AdminMessages from './pages/admin/Messages'
 import AdminSettings from './pages/admin/Settings'
 import AdminRecordings from './pages/admin/Recordings'
 import AdminInventory from './pages/admin/Inventory'
+import AdminOrientations from './pages/admin/Orientations'
 
 function PublicLayout() {
   return (
@@ -89,6 +91,7 @@ export default function App() {
         <Route path="agreement" element={<ClientConductAgreement />} />
         <Route path="requests" element={<ClientTaskRequests />} />
         <Route path="inventory" element={<ClientInventory />} />
+        <Route path="orientation" element={<ClientOrientation />} />
       </Route>
 
       {/* Baddie Portal */}
@@ -131,6 +134,7 @@ export default function App() {
         <Route path="settings" element={<AdminSettings />} />
         <Route path="recordings" element={<AdminRecordings />} />
         <Route path="inventory" element={<AdminInventory />} />
+        <Route path="orientations" element={<AdminOrientations />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

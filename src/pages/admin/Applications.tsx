@@ -26,6 +26,18 @@ export default function AdminApplications() {
     setApplications((prev) => prev.map((a) => a.id === id ? { ...a, status } : a))
   }
 
+  // Client vetting gate: approving a client application vets their profile
+  // (if one exists yet) and queues their in-person orientation.
+  const handleApproveClient = async (app: Application) => {
+    await api.updateApplication(app.id, { status: 'accepted', reviewed_by: profile?.id })
+    const existing = await api.getProfileByEmail(app.email)
+    if (existing) {
+      await api.updateProfile(existing.id, { status: 'vetted' })
+      await api.createOrientation({ client_id: existing.id, status: 'requested', created_by: profile?.id })
+    }
+    setApplications((prev) => prev.map((a) => a.id === app.id ? { ...a, status: 'accepted' } : a))
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -86,12 +98,21 @@ export default function AdminApplications() {
 
                   {app.status === 'pending' && (
                     <div className="flex gap-3">
-                      <button
-                        onClick={() => handleAction(app.id, 'accepted')}
-                        className="px-5 py-2 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium hover:bg-green-500/30 transition-all cursor-pointer"
-                      >
-                        Accept
-                      </button>
+                      {app.type === 'client' ? (
+                        <button
+                          onClick={() => handleApproveClient(app)}
+                          className="px-5 py-2 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium hover:bg-green-500/30 transition-all cursor-pointer"
+                        >
+                          Approve → Orientation
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleAction(app.id, 'accepted')}
+                          className="px-5 py-2 bg-green-500/20 text-green-400 rounded-lg text-sm font-medium hover:bg-green-500/30 transition-all cursor-pointer"
+                        >
+                          Accept
+                        </button>
+                      )}
                       <button
                         onClick={() => handleAction(app.id, 'rejected')}
                         className="px-5 py-2 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium hover:bg-red-500/30 transition-all cursor-pointer"
@@ -99,6 +120,11 @@ export default function AdminApplications() {
                         Reject
                       </button>
                     </div>
+                  )}
+                  {app.type === 'client' && app.status === 'accepted' && (
+                    <p className="mt-3 text-xs text-soft">
+                      Vetted. Their orientation is queued — schedule it under Orientations.
+                    </p>
                   )}
                 </div>
               )}

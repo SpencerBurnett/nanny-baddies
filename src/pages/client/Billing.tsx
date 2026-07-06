@@ -41,7 +41,7 @@ export default function ClientBilling() {
               </div>
               <div>
                 <p className="text-xs text-muted mb-1">Amount</p>
-                <p className="text-sm text-warm-white font-medium">${sub.tier?.monthly_price?.toLocaleString()}/mo</p>
+                <p className="text-sm text-warm-white font-medium">${sub.tier?.quarterly_price?.toLocaleString()}/qtr</p>
               </div>
               <div>
                 <p className="text-xs text-muted mb-1">Current Period</p>

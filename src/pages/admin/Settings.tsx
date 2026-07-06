@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Save } from 'lucide-react'
+import { MODEL_HOUSE_KEY, getModelHouseAddress } from '../../lib/settings'
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
     companyName: 'Nanny Baddies',
     contactEmail: 'hello@nannybaddies.com',
+    modelHouseAddress: getModelHouseAddress(),
     defaultShiftHours: 4,
     defaultHourlyRate: 35,
     commitmentCycleDays: 90,
@@ -12,9 +14,11 @@ export default function AdminSettings() {
     requireBackgroundCheck: true,
     autoMatchNotifications: true,
   })
+  const [saved, setSaved] = useState(false)
 
   const handleSave = () => {
-    // Placeholder: save to Supabase settings table
+    localStorage.setItem(MODEL_HOUSE_KEY, settings.modelHouseAddress)
+    setSaved(true)
   }
 
   return (
@@ -29,7 +33,7 @@ export default function AdminSettings() {
           className="flex items-center gap-2 bg-gold text-midnight font-medium rounded-lg px-5 py-2.5 text-sm hover:bg-gold/90 transition-all cursor-pointer"
         >
           <Save className="w-4 h-4" />
-          Save Changes
+          {saved ? 'Saved' : 'Save Changes'}
         </button>
       </div>
 
@@ -52,6 +56,16 @@ export default function AdminSettings() {
                 type="email"
                 value={settings.contactEmail}
                 onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
+                className="w-full bg-slate-dark/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-warm-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-muted mb-1.5">Model House Address</label>
+              <input
+                type="text"
+                value={settings.modelHouseAddress}
+                onChange={(e) => { setSettings({ ...settings, modelHouseAddress: e.target.value }); setSaved(false) }}
+                placeholder="Where in-person orientations are held"
                 className="w-full bg-slate-dark/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-warm-white"
               />
             </div>
