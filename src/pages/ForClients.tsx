@@ -192,13 +192,12 @@ export default function ForClients() {
               For Clients
             </span>
             <h1 className="font-display text-5xl md:text-6xl font-medium text-warm-white leading-tight">
-              Absolute freedom{' '}
-              <span className="italic text-gold">for your ADHD</span>
+              Drop the{' '}
+              <span className="italic text-gold">mental load.</span>
             </h1>
             <p className="mt-6 text-lg text-muted max-w-2xl mx-auto leading-relaxed">
-              You build. She executes. 13 service categories, a personalized checklist,
-              and a dedicated Nanny Baddie who studies your life before she ever walks in.
-              Come home to a life that runs itself.
+              You build. She executes. Come home to a life that runs itself —
+              nothing to remember, nothing to manage.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button to="/apply" size="lg">

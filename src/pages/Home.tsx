@@ -4,6 +4,7 @@ import ServicePreview from '../components/home/ServicePreview'
 import ProfileTeaser from '../components/home/ProfileTeaser'
 import Packages from '../components/home/Packages'
 import CTASection from '../components/home/CTASection'
+import DevAccess from '../components/DevAccess'
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <ProfileTeaser />
       <Packages />
       <CTASection />
+      <DevAccess />
     </>
   )
 }
